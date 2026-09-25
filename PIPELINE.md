@@ -42,5 +42,5 @@ sampleB,s3://bucket/sampleB.fq.gz
 nextflow run main.nf -profile test,docker --outdir results
 ```
 
-Uses the bundled data in `../slamdunk/test/data`. Container:
+Uses the bundled data in `slamdunk/test/data`. Container:
 `quay.io/biocontainers/slamdunk:0.4.3--py_0`.
