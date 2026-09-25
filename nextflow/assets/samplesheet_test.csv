@@ -1,2 +1,2 @@
 sample,fastq
-reads,../slamdunk/test/data/reads.fq
+reads,../../slamdunk/test/data/reads.fq

@@ -15,6 +15,9 @@ workflow {
     ch_bed   = file(params.bed,   checkIfExists: true)
 
     // --- Parse samplesheet into [ meta, reads ] ---
+    // Relative fastq paths are resolved against the samplesheet's own directory,
+    // so bundled test data works while absolute paths / URLs (s3://, http://) pass through.
+    def sheet_dir = file(params.input).parent
     ch_reads = channel
         .fromPath(params.input, checkIfExists: true)
         .splitCsv(header: true)
@@ -22,8 +25,11 @@ workflow {
             if (!row.sample || !row.fastq) {
                 error "Samplesheet must have 'sample' and 'fastq' columns. Got: ${row}"
             }
+            def is_absolute = row.fastq.startsWith('/') || row.fastq.contains('://')
+            def reads = is_absolute ? file(row.fastq, checkIfExists: true)
+                                    : file(sheet_dir.resolve(row.fastq), checkIfExists: true)
             def meta = [ id: row.sample ]
-            [ meta, file(row.fastq, checkIfExists: true) ]
+            [ meta, reads ]
         }
 
     // --- Run full slamdunk analysis per sample ---
